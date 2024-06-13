@@ -7,36 +7,35 @@ class Game():
         self.BOARD_SIZE = 8
 
     def update(self, last_play: tuple) -> None:
-        """Checks all possible captures that can be made by last_play"""
+        # for each direction from last_play, check each square in that direction. If it is the oppostie color, keep going
+        # if not, then stop. If stopped on a square of the same color as last_play, flip all reached squares
+        # If oob or empty, move on
         to_change = {}
-        play_color = self.board[last_play] # SYNTAX?
-        for neighbor in self.get_neighbors(last_play):
-            curr = neighbor
-            potential_flips = list[tuple]
-            if self.board[neighbor] * (-1) == play_color: # if this piece is of the opposite color
-                while self.board[curr] == (-1) * play_color:
-                    potential_flips.append(curr)
-                    curr = self.get_ray_neighbor(curr, self.get_ray(neighbor, curr))
-                if self.board[curr] == 0:
-                    continue
+        play_color = self.board[last_play]
+        for ray in self.get_rays(last_play):
+            ray_list = list[tuple]
+            curr: tuple = self.get_ray_next()
+            while self.board[curr] == (-1) * play_color:
                 if self.oob_test(curr):
-                    continue
+                    break
+                ray_list.append(curr)
+                curr = self.get_ray_next(curr)
+            if self.board[curr] == play_color and not self.oob_test(curr):
+                to_change.append(ray_list)
+            else:
+                continue
+
+    def get_rays(self, square: tuple) -> list[str]:
+        # TODO: get every direction from the given square that has at least one square in it
         pass
 
     def oob_test(self, square: tuple) -> bool:
-        pass
+        if square[0] < 0 or square[0] > 7 or square[1] < 0 or square[1] > 7:
+            return True
+        return False
 
-    def get_neighbors(self, square: tuple) -> list[tuple]:
-        """Get all neighbors of the given square"""
-        pass
-
-    def get_ray(self, square1: tuple, square2: tuple) -> int:
-        """gets the direction of the ray intersecting two squares
-        up-left is 0, up is 1, up-right is 2, right is 3, down-right is 4, down is 5, down-left is 6, left is 7"""
-        pass
-
-    def get_ray_neighbor(self, square: tuple, direction: int):
-        """up-left is 0, up is 1, up-right is 2, right is 3, down-right is 4, down is 5, down-left is 6, left is 7"""
+    def get_ray_next(self, square: tuple, direction: str):
+        # TODO: get next square in this direction
         pass
 
     def make_move(self, move: tuple) -> None:
